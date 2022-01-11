@@ -64,7 +64,7 @@ function calculateSize(nodeCombatant)
 
 	local aSizeEffects = EffectManager.getEffectsByType(nodeCombatant, "SIZE");
 	local nMod = 0;
-	local sBaseSize = DB.getValue(nodeCombatant, "size", "");
+	local sBaseSize = DB.getValue(nodeCombatant, "size", ""):lower();
 	local sCurrentSize = DB.getValue(nodeCombatant, "currentsize", sBaseSize);
 	local sSize = sBaseSize;
 	for _,rEffect in ipairs(aSizeEffects) do
