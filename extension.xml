@@ -43,8 +43,10 @@ Vectors by Vecteezy at https://www.vecteezy.com/
 		<includefile source="campaign/record_char_inventory.xml" />
 		<includefile source="ct/ct_client.xml" />
 		<includefile source="ct/ct_host.xml" />
+		
+		<icon name="SizeMatter_icon" file="graphics/icons/SizeMatters.png" />
 	</base>
 
-	<announcement text="Size Matters dev_version by MeAndUnique." font="emotefont" />
+	<announcement text="Size Matters dev_version by MeAndUnique." icon="SizeMatter_icon" font="emotefont" />
 
 </root>
