@@ -1,6 +1,8 @@
 # Size Matters
 Adds support for effects that change creature size, space, and reach.
 
+Size Matters is intended to work with any ruleset based on CoreRPG. The SPACE and REACH based effects below are system agnostic, applying specifically to the token. The SIZE effects below make certain assumptions about how the ruleset handles size categories. Support is verified for D&D 5E to account for SIZE changes with encumbrance and IF: SIZE() conditional effects. Mileage for other rulesets may vary.
+
 The following effects have been added:
 * **SIZE: n** - Adjusts the bearer n number of size increments. E.g. "SIZE: 2" will turn a small creature into a large creature.
 * **SIZE: size** - Makes the bearer the given size. The allowed values for size are determined by the ruleset (for any ruleset that uses "DataCommon.creaturesize").
