@@ -12,28 +12,39 @@ function onInit()
 
 	getTokenSpaceOriginal = TokenManager.getTokenSpace;
 	TokenManager.getTokenSpace = getTokenSpace;
+
+	if Session.IsHost then
+		SizeManager.addSpaceChangedHandler(onSpaceChanged);
+		SizeManager.addReachChangedHandler(onReachChanged);
+	end
 end
 
 function updateSizeHelper(tokenCT, nodeCT)
-	local nOriginalSpace, nOriginalReach = SizeManager.swapSpaceReach(nodeCT);
+	SizeManager.swapSpaceReach();
 	updateSizeHelperOriginal(tokenCT, nodeCT);
-	SizeManager.resetSpaceReach(nodeCT, nOriginalSpace, nOriginalReach);
+	SizeManager.resetSpaceReach();
 end
 
 function getTokenSpace(tokenMap)
-	local nodeCT = CombatManager.getCTFromToken(tokenMap)
-	local nOriginalSpace, nOriginalReach = SizeManager.swapSpaceReach(nodeCT);
+	SizeManager.swapSpaceReach();
 	local nSpace = getTokenSpaceOriginal(tokenMap);
-	SizeManager.resetSpaceReach(nodeCT, nOriginalSpace, nOriginalReach);
+	SizeManager.resetSpaceReach();
 	return nSpace;
 end
 
-function stopHandlingSpaceReach()
-	CombatManager.removeCombatantFieldChangeHandler("space", "onUpdate", TokenManager.updateSpaceReach);
-	CombatManager.removeCombatantFieldChangeHandler("reach", "onUpdate", TokenManager.updateSpaceReach);
+function onSpaceChanged(nodeCombatant)
+	local tokenCombatant = CombatManager.getTokenFromCT(nodeCombatant);
+	if tokenCombatant then
+		TokenManager.updateSizeHelper(tokenCombatant, nodeCombatant);
+		if OptionsManager.getOption("TASG") ~= "" then
+			TokenManager.autoTokenScale(tokenCombatant);
+		end
+	end
 end
 
-function resumeHandlingSpaceReach()
-	CombatManager.addCombatantFieldChangeHandler("space", "onUpdate", TokenManager.updateSpaceReach);
-	CombatManager.addCombatantFieldChangeHandler("reach", "onUpdate", TokenManager.updateSpaceReach);
+function onReachChanged(nodeCombatant)
+	local tokenCombatant = CombatManager.getTokenFromCT(nodeCombatant);
+	if tokenCombatant then
+		TokenManager.updateSizeHelper(tokenCombatant, nodeCombatant);
+	end
 end

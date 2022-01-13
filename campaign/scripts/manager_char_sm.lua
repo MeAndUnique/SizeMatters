@@ -13,9 +13,8 @@ function onInit()
 end
 
 function getEncumbranceMult(nodeChar)
-	local rActor = ActorManager.resolveActor(nodeChar);
-	local sOriginalSize = SizeManager.swapSize(rActor);
+	SizeManager.swapSize();
 	local result = getEncumbranceMultOriginal(nodeChar);
-	SizeManager.resetSize(rActor, sOriginalSize);
+	SizeManager.resetSize();
 	return result;
 end
