@@ -6,10 +6,10 @@
 				<script>
 					function onInit()
 						super.onInit();
-						SizeManager.addSizeChangedHandler(super.onSourceUpdate);
+						SizeManager.addSizeChangedHandler(super.sourceUpdate);
 					end
 					function onClose()
-						SizeManager.removeSizeChangedHandler(super.onSourceUpdate);
+						SizeManager.removeSizeChangedHandler(super.sourceUpdate);
 						super.onClose();
 					end
 				</script>

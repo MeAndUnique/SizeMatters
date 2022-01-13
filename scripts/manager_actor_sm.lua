@@ -13,9 +13,8 @@ function onInit()
 end
 
 function isSize(rActor, sSizeCheck)
-	local _,nodeActor = ActorManager.getTypeAndNode(rActor);
-	local sOriginalSize = SizeManager.swapSize(rActor);
+	SizeManager.swapSize();
 	local result = isSizeOriginal(rActor, sSizeCheck);
-	SizeManager.resetSize(rActor, sOriginalSize);
+	SizeManager.resetSize();
 	return result;
 end

@@ -3,10 +3,53 @@
 -- attribution and copyright information.
 --
 
+local getValueOriginal;
+
 local tSizeChangedHandlers = {};
+local tSpaceChangedHandlers = {};
+local tReachChangedHandlers = {};
+
+local bShouldSwap;
+local sDeleted;
 
 function onInit()
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".effects", "onChildUpdate", onCombatantEffectUpdated);
+	getValueOriginal = DB.getValue;
+	DB.getValue = getDBValue;
+
+	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentsize", "onUpdate", onCurrentSizeChanged);
+	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentspace", "onUpdate", onCurrentSpaceChanged);
+	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentreach", "onUpdate", onCurrentReachChanged);
+	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentsize", "onDelete", onCurrentDeleted);
+	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentspace", "onDelete", onCurrentDeleted);
+	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentreach", "onDelete", onCurrentDeleted);
+	DB.addHandler(CombatManager.CT_COMBATANT_PATH, "onChildDeleted", onChildDeleted);
+
+	if Session.IsHost then
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".effects", "onChildUpdate", onCombatantEffectUpdated);
+	end
+end
+
+function getDBValue(vFirst, vSecond, ...)
+	if bShouldSwap then
+		if vSecond == "size" then
+			local nodeCT = ActorManager.getCTNode(vFirst)
+			local vCurrent = getValueOriginal(nodeCT, "currentsize");
+			if vCurrent then
+				return vCurrent;
+			end
+		elseif vSecond == "space" then
+			local vCurrent = getValueOriginal(vFirst, "currentspace");
+			if vCurrent then
+				return vCurrent;
+			end
+		elseif vSecond == "reach" then
+			local vCurrent = getValueOriginal(vFirst, "currentreach");
+			if vCurrent then
+				return vCurrent;
+			end
+		end
+	end
+	return getValueOriginal(vFirst, vSecond, unpack(arg));
 end
 
 function addSizeChangedHandler(fHandler)
@@ -17,9 +60,37 @@ function removeSizeChangedHandler(fHandler)
 	tSizeChangedHandlers[fHandler] = nil;
 end
 
-function invokeSizeChangedHandlers()
+function invokeSizeChangedHandlers(nodeCombatant)
 	for fHandler in pairs(tSizeChangedHandlers) do
-		fHandler();
+		fHandler(nodeCombatant);
+	end
+end
+
+function addSpaceChangedHandler(fHandler)
+	tSpaceChangedHandlers[fHandler] = true;
+end
+
+function removeSpaceChangedHandler(fHandler)
+	tSpaceChangedHandlers[fHandler] = nil;
+end
+
+function invokeSpaceChangedHandlers(nodeCombatant)
+	for fHandler in pairs(tSpaceChangedHandlers) do
+		fHandler(nodeCombatant);
+	end
+end
+
+function addReachChangedHandler(fHandler)
+	tReachChangedHandlers[fHandler] = true;
+end
+
+function removeReachChangedHandler(fHandler)
+	tReachChangedHandlers[fHandler] = nil;
+end
+
+function invokeReachChangedHandlers(nodeCombatant)
+	for fHandler in pairs(tReachChangedHandlers) do
+		fHandler(nodeCombatant);
 	end
 end
 
@@ -35,20 +106,37 @@ function getSizeTable()
 	return DataCommon.creaturesize;
 end
 
+function onCurrentSizeChanged(nodeCurrent)
+	invokeSizeChangedHandlers(nodeCurrent.getParent());
+end
+
+function onCurrentSpaceChanged(nodeCurrent)
+	invokeSpaceChangedHandlers(nodeCurrent.getParent());
+end
+
+function onCurrentReachChanged(nodeCurrent)
+	invokeReachChangedHandlers(nodeCurrent.getParent());
+end
+
+function onCurrentDeleted(nodeCurrent)
+	sDeleted = nodeCurrent.getName();
+end
+
+function onChildDeleted(nodeCombatant)
+	if sDeleted == "currentsize" then
+		invokeSizeChangedHandlers(nodeCombatant);
+	elseif sDeleted == "currentspace" then
+		invokeSpaceChangedHandlers(nodeCombatant);
+	elseif sDeleted == "currentreach" then
+		invokeReachChangedHandlers(nodeCombatant);
+	end
+	sDeleted =nil;
+end
+
 function onCombatantEffectUpdated(nodeEffectList)
 	local nodeCombatant = nodeEffectList.getParent();
-	local tokenCombatant = CombatManager.getTokenFromCT(nodeCombatant);
 	local bChanged = calculateSpace(nodeCombatant);
 	bChanged = calculateReach(nodeCombatant) or bChanged;
-
-	if bChanged then
-		if tokenCombatant then
-			TokenManager.updateSizeHelper(tokenCombatant, nodeCombatant);
-			if (OptionsManager.getOption("TASG") ~= "") and ImageManager.getImageControl(tokenCombatant) then
-				TokenManager.autoTokenScale(tokenCombatant);
-			end
-		end
-	end
 end
 
 function calculateSize(nodeCombatant)
@@ -94,7 +182,6 @@ function calculateSize(nodeCombatant)
 		else
 			DB.setValue(nodeCombatant, "currentsize", "string", getSizeName(nSize));
 		end
-		invokeSizeChangedHandlers();
 	end
 	return nSize;
 end
@@ -179,47 +266,18 @@ function getSpaceFromSize(nSize, nDU)
 	end
 end
 
-function swapSpaceReach(nodeCT)
-	TokenManagerSM.stopHandlingSpaceReach();
-	local nOriginalSpace, nOriginalReach;
-	local nSpace = DB.getValue(nodeCT, "currentspace");
-	local nReach = DB.getValue(nodeCT, "currentreach");
-	if nSpace then
-		nOriginalSpace = DB.getValue(nodeCT, "space");
-		DB.setValue(nodeCT, "space", "number", nSpace);
-	end
-	if nReach then
-		nOriginalReach = DB.getValue(nodeCT, "reach");
-		DB.setValue(nodeCT, "reach", "number", nReach);
-	end
-	return nOriginalSpace, nOriginalReach;
+function swapSpaceReach()
+	bShouldSwap = true;
 end
 
-function resetSpaceReach(nodeCT, nOriginalSpace, nOriginalReach)
-	if nOriginalSpace then
-		DB.setValue(nodeCT, "space", "number", nOriginalSpace);
-	end
-	if nOriginalReach then
-		DB.setValue(nodeCT, "reach", "number", nOriginalReach);
-	end
-	TokenManagerSM.resumeHandlingSpaceReach();
+function resetSpaceReach()
+	bShouldSwap = false;
 end
 
-function swapSize(rActor)
-	local _,nodeActor = ActorManager.getTypeAndNode(rActor);
-	local nodeCT = ActorManager.getCTNode(rActor);
-	local sOriginalSize;
-	local sSize = DB.getValue(nodeCT, "currentsize");
-	if sSize then
-		sOriginalSize = DB.getValue(nodeActor, "size");
-		DB.setValue(nodeActor, "size", "string", sSize);
-	end
-	return sOriginalSize;
+function swapSize()
+	bShouldSwap = true;
 end
 
-function resetSize(rActor, sOriginalSize)
-	local _,nodeActor = ActorManager.getTypeAndNode(rActor);
-	if sOriginalSize then
-		DB.setValue(nodeActor, "size", "string", sOriginalSize);
-	end
+function resetSize()
+	bShouldSwap = false;
 end
