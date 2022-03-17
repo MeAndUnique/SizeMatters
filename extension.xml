@@ -36,11 +36,10 @@ Vectors by Vecteezy at https://www.vecteezy.com/
 
 	<base>
 		<script name="ActorManagerSM" file="scripts/manager_actor_sm.lua" />
-		<script name="CharManagerSM" file="campaign/scripts/manager_char_sm.lua" />
+		<script name="EncumbranceManagerSM" file="scripts/manager_encumbrance_sm.lua" />
 		<script name="SizeManager" file="scripts/manager_size.lua" />
 		<script name="TokenManagerSM" file="scripts/manager_token_sm.lua" />
 
-		<includefile source="campaign/record_char_inventory.xml" />
 		<includefile source="ct/ct_client.xml" />
 		<includefile source="ct/ct_host.xml" />
 		
