@@ -3,18 +3,26 @@
 -- attribution and copyright information.
 --
 
-local isSizeOriginal;
+local isCreatureSizeDnDOriginal;
+local isCreatureSizeDnD5Original;
 
 function onInit()
-	if ActorManager5E then
-		isSizeOriginal = ActorManager5E.isSize;
-		ActorManager5E.isSize = isSize;
-	end
+	isCreatureSizeDnDOriginal = ActorCommonManager.isCreatureSizeDnD;
+	ActorCommonManager.isCreatureSizeDnD = isCreatureSizeDnD;
+	isCreatureSizeDnD5Original = ActorCommonManager.isCreatureSizeDnD5;
+	ActorCommonManager.isCreatureSizeDnD5 = isCreatureSizeDnD5;
 end
 
-function isSize(rActor, sSizeCheck)
+function isCreatureSizeDnD(rActor, sParam)
 	SizeManager.swapSize();
-	local result = isSizeOriginal(rActor, sSizeCheck);
+	local result = isCreatureSizeDnDOriginal(rActor, sParam);
+	SizeManager.resetSize();
+	return result;
+end
+
+function isCreatureSizeDnD5(rActor, sParam)
+	SizeManager.swapSize();
+	local result = isCreatureSizeDnD5Original(rActor, sParam);
 	SizeManager.resetSize();
 	return result;
 end
