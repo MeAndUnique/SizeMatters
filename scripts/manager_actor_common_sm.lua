@@ -3,26 +3,26 @@
 -- attribution and copyright information.
 --
 
-local isCreatureSizeDnDOriginal;
-local isCreatureSizeDnD5Original;
+local getCreatureSizeDnD3Original;
+local getCreatureSizeDnD5Original;
 
 function onInit()
-	isCreatureSizeDnDOriginal = ActorCommonManager.isCreatureSizeDnD;
-	ActorCommonManager.isCreatureSizeDnD = isCreatureSizeDnD;
-	isCreatureSizeDnD5Original = ActorCommonManager.isCreatureSizeDnD5;
-	ActorCommonManager.isCreatureSizeDnD5 = isCreatureSizeDnD5;
+	getCreatureSizeDnD3Original = ActorCommonManager.getCreatureSizeDnD3;
+	ActorCommonManager.getCreatureSizeDnD3 = getCreatureSizeDnD3;
+	getCreatureSizeDnD5Original = ActorCommonManager.getCreatureSizeDnD5;
+	ActorCommonManager.getCreatureSizeDnD5 = getCreatureSizeDnD5;
 end
 
-function isCreatureSizeDnD(rActor, sParam)
+function getCreatureSizeDnD3(rActor, sParam)
 	SizeManager.swapSize();
-	local result = isCreatureSizeDnDOriginal(rActor, sParam);
+	local result = getCreatureSizeDnD3Original(rActor, sParam);
 	SizeManager.resetSize();
 	return result;
 end
 
-function isCreatureSizeDnD5(rActor, sParam)
+function getCreatureSizeDnD5(rActor, sParam)
 	SizeManager.swapSize();
-	local result = isCreatureSizeDnD5Original(rActor, sParam);
+	local result = getCreatureSizeDnD5Original(rActor, sParam);
 	SizeManager.resetSize();
 	return result;
 end

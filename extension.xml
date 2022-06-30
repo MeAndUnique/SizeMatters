@@ -35,7 +35,7 @@ Vectors by Vecteezy at https://www.vecteezy.com/
 	</properties>
 
 	<base>
-		<script name="ActorManagerSM" file="scripts/manager_actor_sm.lua" />
+		<script name="ActorCommonManagerSM" file="scripts/manager_actor_common_sm.lua" />
 		<script name="EncumbranceManagerSM" file="scripts/manager_encumbrance_sm.lua" />
 		<script name="SizeManager" file="scripts/manager_size.lua" />
 		<script name="TokenManagerSM" file="scripts/manager_token_sm.lua" />
