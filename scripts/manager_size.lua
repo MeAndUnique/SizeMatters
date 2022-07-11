@@ -16,15 +16,14 @@ function onInit()
 	getValueOriginal = DB.getValue;
 	DB.getValue = getDBValue;
 
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentsize", "onUpdate", onCurrentSizeChanged);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentspace", "onUpdate", onCurrentSpaceChanged);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentreach", "onUpdate", onCurrentReachChanged);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentsize", "onDelete", onCurrentDeleted);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentspace", "onDelete", onCurrentDeleted);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentreach", "onDelete", onCurrentDeleted);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH, "onChildDeleted", onChildDeleted);
-
 	if Session.IsHost then
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentsize", "onUpdate", onCurrentSizeChanged);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentspace", "onUpdate", onCurrentSpaceChanged);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentreach", "onUpdate", onCurrentReachChanged);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentsize", "onDelete", onCurrentDeleted);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentspace", "onDelete", onCurrentDeleted);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentreach", "onDelete", onCurrentDeleted);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH, "onChildDeleted", onChildDeleted);
 		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".effects", "onChildUpdate", onCombatantEffectUpdated);
 	end
 end
