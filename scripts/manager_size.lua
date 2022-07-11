@@ -1,5 +1,5 @@
--- 
--- Please see the license.txt file included with this distribution for 
+--
+-- Please see the license.txt file included with this distribution for
 -- attribution and copyright information.
 --
 
@@ -135,8 +135,8 @@ end
 
 function onCombatantEffectUpdated(nodeEffectList)
 	local nodeCombatant = nodeEffectList.getParent();
-	local bChanged = calculateSpace(nodeCombatant);
-	bChanged = calculateReach(nodeCombatant) or bChanged;
+	calculateSpace(nodeCombatant);
+	calculateReach(nodeCombatant);
 end
 
 function calculateSize(nodeCombatant)
@@ -186,8 +186,8 @@ function calculateSize(nodeCombatant)
 	return nSize;
 end
 
-function calculateSpace(nodeCombatant, nFromSize)
-	local nDU = GameSystem.GameSystem.getDistanceUnitsPerGrid();
+function calculateSpace(nodeCombatant)
+	local nDU = GameSystem.getDistanceUnitsPerGrid();
 	local nBaseSpace = DB.getValue(nodeCombatant, "space", nDU);
 	local nCurrentSpace = DB.getValue(nodeCombatant, "currentspace", nBaseSpace);
 	local nSpace = nBaseSpace;
@@ -223,7 +223,7 @@ function calculateSpace(nodeCombatant, nFromSize)
 end
 
 function calculateReach(nodeCombatant)
-	local nDU = GameSystem.GameSystem.getDistanceUnitsPerGrid();
+	local nDU = GameSystem.getDistanceUnitsPerGrid();
 	local nBaseReach = DB.getValue(nodeCombatant, "reach", nDU);
 	local nCurrentReach = DB.getValue(nodeCombatant, "currentreach", nBaseReach);
 	local nReach = nBaseReach;
