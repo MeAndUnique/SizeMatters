@@ -16,15 +16,14 @@ function onInit()
 	getValueOriginal = DB.getValue;
 	DB.getValue = getDBValue;
 
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentsize", "onUpdate", onCurrentSizeChanged);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentspace", "onUpdate", onCurrentSpaceChanged);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentreach", "onUpdate", onCurrentReachChanged);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentsize", "onDelete", onCurrentDeleted);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentspace", "onDelete", onCurrentDeleted);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentreach", "onDelete", onCurrentDeleted);
-	DB.addHandler(CombatManager.CT_COMBATANT_PATH, "onChildDeleted", onChildDeleted);
-
 	if Session.IsHost then
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentsize", "onUpdate", onCurrentSizeChanged);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentspace", "onUpdate", onCurrentSpaceChanged);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentreach", "onUpdate", onCurrentReachChanged);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentsize", "onDelete", onCurrentDeleted);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentspace", "onDelete", onCurrentDeleted);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".currentreach", "onDelete", onCurrentDeleted);
+		DB.addHandler(CombatManager.CT_COMBATANT_PATH, "onChildDeleted", onChildDeleted);
 		DB.addHandler(CombatManager.CT_COMBATANT_PATH .. ".effects", "onChildUpdate", onCombatantEffectUpdated);
 	end
 end
@@ -38,18 +37,20 @@ function getDBValue(vFirst, vSecond, ...)
 				return vCurrent;
 			end
 		elseif vSecond == "space" then
-			local vCurrent = getValueOriginal(vFirst, "currentspace");
+			local nodeCT = ActorManager.getCTNode(vFirst)
+			local vCurrent = getValueOriginal(nodeCT, "currentspace");
 			if vCurrent then
 				return vCurrent;
 			end
 		elseif vSecond == "reach" then
-			local vCurrent = getValueOriginal(vFirst, "currentreach");
+			local nodeCT = ActorManager.getCTNode(vFirst)
+			local vCurrent = getValueOriginal(nodeCT, "currentreach");
 			if vCurrent then
 				return vCurrent;
 			end
 		end
 	end
-	return getValueOriginal(vFirst, vSecond, unpack(arg));
+	return getValueOriginal(vFirst, vSecond, ...);
 end
 
 function addSizeChangedHandler(fHandler)

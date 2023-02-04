@@ -5,12 +5,20 @@
 
 local getCreatureSizeDnD3Original;
 local getCreatureSizeDnD5Original;
+local getSpaceReachOriginal;
 
 function onInit()
 	getCreatureSizeDnD3Original = ActorCommonManager.getCreatureSizeDnD3;
 	ActorCommonManager.getCreatureSizeDnD3 = getCreatureSizeDnD3;
 	getCreatureSizeDnD5Original = ActorCommonManager.getCreatureSizeDnD5;
 	ActorCommonManager.getCreatureSizeDnD5 = getCreatureSizeDnD5;
+	getSpaceReachOriginal = ActorCommonManager.getSpaceReach;
+	ActorCommonManager.getSpaceReach = getSpaceReach;
+
+	if not ActorCommonManager.hasRecordTypeSpaceReachCallback("charsheet") then
+		local npcSpaceReachCallback = ActorCommonManager.getRecordTypeSpaceReachCallback("npc");
+		ActorCommonManager.getRecordTypeSpaceReachCallback("charsheet", npcSpaceReachCallback);
+	end
 end
 
 function getCreatureSizeDnD3(rActor, sParam)
@@ -25,4 +33,11 @@ function getCreatureSizeDnD5(rActor, sParam)
 	local result = getCreatureSizeDnD5Original(rActor, sParam);
 	SizeManager.resetSize();
 	return result;
+end
+
+function getSpaceReach(v)
+	SizeManager.swapSpaceReach();
+	local nSpace, nReach = getSpaceReachOriginal(v);
+	SizeManager.resetSpaceReach();
+	return nSpace, nReach;
 end
