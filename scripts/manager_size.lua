@@ -50,7 +50,11 @@ function getDBValue(vFirst, vSecond, ...)
 			end
 		end
 	end
-	return getValueOriginal(vFirst, vSecond, ...);
+	if vSecond then
+		return getValueOriginal(vFirst, vSecond, ...);
+	else
+		return getValueOriginal(vFirst);
+	end
 end
 
 function addSizeChangedHandler(fHandler)
