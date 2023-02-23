@@ -37,18 +37,24 @@ function getDBValue(vFirst, vSecond, ...)
 				return vCurrent;
 			end
 		elseif vSecond == "space" then
-			local vCurrent = getValueOriginal(vFirst, "currentspace");
+			local nodeCT = ActorManager.getCTNode(vFirst)
+			local vCurrent = getValueOriginal(nodeCT, "currentspace");
 			if vCurrent then
 				return vCurrent;
 			end
 		elseif vSecond == "reach" then
-			local vCurrent = getValueOriginal(vFirst, "currentreach");
+			local nodeCT = ActorManager.getCTNode(vFirst)
+			local vCurrent = getValueOriginal(nodeCT, "currentreach");
 			if vCurrent then
 				return vCurrent;
 			end
 		end
 	end
-	return getValueOriginal(vFirst, vSecond, unpack(arg));
+	if vSecond then
+		return getValueOriginal(vFirst, vSecond, ...);
+	else
+		return getValueOriginal(vFirst);
+	end
 end
 
 function addSizeChangedHandler(fHandler)
